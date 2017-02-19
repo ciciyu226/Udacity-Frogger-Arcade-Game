@@ -1,9 +1,13 @@
 /* Definition of global variables */
+var NUM_ROW = 6;
+var NUM_COL = 5;
 var canW = 505;
 var canH = 606;
 var blockW = 101, blockH = 83; //all elements used in this game have this dimension, so here generally call them block;
-var startX = -blockW;
-
+var TOP_OFFSET = 0.25 * blockH;
+var EnemyStartX = -blockW;
+var PlayerStartX = Math.floor(NUM_COL/2) * blockW;
+var PlayerStartY = (NUM_ROW -1)* blockH - TOP_OFFSET;
 
 
 // var charSpeedX = blockW;
@@ -34,7 +38,7 @@ Enemy.prototype.update = function(dt) {
     //if ememy moves outside of the canvas, move it back to the leftmost
     // start position and update its speed to another random speed.
     if(this.x > canW){
-        this.x = startX;
+        this.x = EnemyStartX;
         this.speed = Math.random()*speedMultiplier;
     }
     //if enemy is still inside canvas, update its position to move it
@@ -53,20 +57,33 @@ Enemy.prototype.render = function() {
 // This class requires an update(), render() and
 // a handleInput() method.
 var Player = function(x,y){
+    this.sprite = 'images/char-boy.png';
     this.x = x;
     this.y = y;
 };
 //This method handles player's movement, collision, and other actions.
 Player.prototype.update = function(){
-   // this.handleInput();
-
-
+        this.handleInput();
 };
 
 Player.prototype.render = function(){
-
+    ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
 };
 
+
+Player.prototype.handleInput = function(keyChar){
+    if(keyChar == 'left' && this.x > 0){
+        this.x -= blockW;
+    }
+    else if(keyChar == 'right' && this.x < canW - blockW){
+        this.x += blockW;
+    }
+    else if(keyChar == 'up' && this.y > 0){
+        this.y -= blockH;
+    }
+    else if(keyChar == 'down' && this.y <= PlayerStartY - blockH)
+        this.y += blockH;
+};
 
 // Now instantiate your objects.
 // Place all enemy objects in an array called allEnemies
@@ -74,15 +91,15 @@ Player.prototype.render = function(){
 var allEnemies =[];
 //
 var numEnemyTrails = 3;  //there are 3 enemy trails at level 1.
-var numEnemyPerRow = 1;  //each enemytrial will have 2 enemies at level 1.
+var numEnemyPerRow = 2;  //each enemytrial will have 2 enemies at level 1.
 var speedMultiplier = 100; // speed multiplier of enemy at level 1.
 for(var i = 0 ; i < numEnemyTrails; i++ ){
     for(var j = 0; j < numEnemyPerRow; j++){
-        var enemy = new Enemy(startX, (i+1) * blockH - 0.25 * blockH , Math.random()*speedMultiplier + 50);
+        var enemy = new Enemy(EnemyStartX, (i+1) * blockH - TOP_OFFSET, Math.random()*speedMultiplier + 50);
         allEnemies.push(enemy);
     }
 }
-var player = new Player(100,100); // TODO: define x, y
+var player = new Player(PlayerStartX,PlayerStartY); // TODO: define x, y
 
 // This listens for key presses and sends the keys to your
 // Player.handleInput() method. You don't need to modify this.
@@ -93,6 +110,6 @@ document.addEventListener('keyup', function(e) {
         39: 'right',
         40: 'down'
     };
-    condole.log(e.keyCode);
+
     player.handleInput(allowedKeys[e.keyCode]);
 });

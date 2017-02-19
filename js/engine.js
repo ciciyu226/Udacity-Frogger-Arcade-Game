@@ -80,7 +80,7 @@ var Engine = (function(global) {
      */
     function update(dt) {
         updateEntities(dt);
-        // checkCollisions();
+        checkCollisions();
     }
 
     /* This is called by the update function and loops through all of the
@@ -96,7 +96,17 @@ var Engine = (function(global) {
         });
         player.update();
     }
-
+    function checkCollisions() {
+        //Check if player collides with enemies -lose
+        allEnemies.forEach(function(enemy){
+            if(player.y == enemy.y && player.x + blockW - 30 > enemy.x && player.x + 30 < enemy.x + blockW){
+                console.log('collided!');
+                reset();
+            }
+        });
+        //TODO: Check winning conditions: reached water
+        //TODO: extension: check if collides gems (and key).
+    }
     /* This function initially draws the "game level", it will then call
      * the renderEntities function. Remember, this function is called every
      * game tick (or loop of the game engine) because that's how games work -
@@ -115,8 +125,8 @@ var Engine = (function(global) {
                 'images/grass-block.png',   // Row 1 of 2 of grass
                 'images/grass-block.png'    // Row 2 of 2 of grass
             ],
-            numRows = 6,
-            numCols = 5,
+            numRows = NUM_ROW,
+            numCols = NUM_COL,
             row, col;
 
         /* Loop through the number of rows and columns we've defined above
@@ -160,6 +170,8 @@ var Engine = (function(global) {
      */
     function reset() {
         // noop
+        player.x = PlayerStartX;
+        player.y = PlayerStartY;
     }
 
     /* Go ahead and load all of the images we know we're going to need to
