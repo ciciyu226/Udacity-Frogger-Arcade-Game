@@ -39,7 +39,7 @@ Enemy.prototype.update = function(dt) {
     // start position and update its speed to another random speed.
     if(this.x > canW){
         this.x = EnemyStartX;
-        this.speed = Math.random()*speedMultiplier;
+        this.speed = Math.random()*speedMultiplier + 50;
     }
     //if enemy is still inside canvas, update its position to move it
     //a step right.
@@ -80,6 +80,9 @@ Player.prototype.handleInput = function(keyChar){
     }
     else if(keyChar == 'up' && this.y > 0){
         this.y -= blockH;
+        if(this.y < blockH - TOP_OFFSET){
+            this.y = -10; // adjust the char to avoid printing outside of canvas.
+        }
     }
     else if(keyChar == 'down' && this.y <= PlayerStartY - blockH)
         this.y += blockH;

@@ -36,7 +36,7 @@ var start = true;
 var frameID = 0;
 var collideEnemy = false;
 var collideGoal = false;
-var myVar;
+
     function main() {
         /* Get our time delta information which is required if your game
          * requires smooth animation. Because everyone's computer processes
@@ -67,7 +67,7 @@ var myVar;
         }
         else{
              win.cancelAnimationFrame(frameID); // stop frame for now
-             myVar = setTimeout(reset, 200);
+             setTimeout(reset, 200);
              win.requestAnimationFrame(main);
         }
     }
@@ -115,21 +115,21 @@ var myVar;
     function checkCollisions() {
         //Check if player collides with enemies -lose
         allEnemies.forEach(function(enemy){
-        if(player.y == enemy.y && player.x + blockW - 30 > enemy.x && player.x + 30 < enemy.x + blockW){
-            collideEnemy = true;
-            if(frameID & collideEnemy){
-                start = false;
-                console.log(frameID);
-
+            if(player.y == enemy.y && player.x + blockW - 30 > enemy.x && player.x + 30 < enemy.x + blockW){
+                collideEnemy = true;
+                if(collideEnemy){
+                    start = false;
+                    //console.log(frameID);
+                }
             }
-
-
-        }
-        //TODO: Check if player collides with goal - win, set start to false.
-        //TODO: Check if player collides with gems and hearts, set start to true.
         });
         //TODO: Check winning conditions: reached water
-        //TODO: extension: check if collides gems (and key).
+        if(player.y < blockH - TOP_OFFSET){
+            console.log(player.y);
+            collideGoal = true;
+            start = false;
+        }
+        //TODO: extension: check if collides gems (and hearts and key).
     }
     /* This function initially draws the "game level", it will then call
      * the renderEntities function. Remember, this function is called every
