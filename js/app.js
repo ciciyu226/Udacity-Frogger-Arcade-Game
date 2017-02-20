@@ -1,3 +1,5 @@
+//TDOO: add gems, different level and difficulty.
+
 /* Definition of global variables */
 var NUM_ROW = 6;
 var NUM_COL = 5;
@@ -8,7 +10,8 @@ var TOP_OFFSET = 0.25 * blockH;
 var EnemyStartX = -blockW;
 var PlayerStartX = Math.floor(NUM_COL/2) * blockW;
 var PlayerStartY = (NUM_ROW -1)* blockH - TOP_OFFSET;
-
+var HeartStartX = Math.floor(Math.random() *  NUM_COL+ 1)* blockW;
+var HeartStartY = Math.floor(Math.random() * (NUM_ROW - 3)+1) * blockH - TOP_OFFSET;
 
 // var charSpeedX = blockW;
 // var charSpeedY = blockH;
@@ -87,6 +90,19 @@ Player.prototype.handleInput = function(keyChar){
     else if(keyChar == 'down' && this.y <= PlayerStartY - blockH)
         this.y += blockH;
 };
+var Heart = function(x,y){
+    this.sprite = "images/Heart.png";
+    this.x = x;
+    this.y = y;
+}
+
+
+Heart.prototype.render = function(){
+    ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
+};
+
+
+
 
 // Now instantiate your objects.
 // Place all enemy objects in an array called allEnemies
@@ -103,7 +119,7 @@ for(var i = 0 ; i < numEnemyTrails; i++ ){
     }
 }
 var player = new Player(PlayerStartX,PlayerStartY); // TODO: define x, y
-
+var heart = new Heart(HeartStartX, HeartStartY);
 // This listens for key presses and sends the keys to your
 // Player.handleInput() method. You don't need to modify this.
 document.addEventListener('keyup', function(e) {

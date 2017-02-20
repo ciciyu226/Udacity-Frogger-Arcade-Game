@@ -25,6 +25,8 @@ var Engine = (function(global) {
         ctx = canvas.getContext('2d'),
         lastTime;
 
+    var date = new Date();
+    var time = 0
 
     canvas.width = canW;
     canvas.height = canH;
@@ -38,6 +40,8 @@ var frameID = 0;
 var collideEnemy = false;
 var collideGoal = false;
 var score = 0;
+var lifeCount = 3;
+var record = 0;
 
     function main() {
         /* Get our time delta information which is required if your game
@@ -121,17 +125,27 @@ var score = 0;
                 collideEnemy = true;
                 if(collideEnemy){
                     start = false;
+                    lifeCount--;
                     //console.log(frameID);
                 }
             }
         });
-        //TODO: Check winning conditions: reached water
         if(player.y < blockH - TOP_OFFSET){
             console.log(player.y);
             collideGoal = true;
             start = false;
         }
         //TODO: extension: check if collides gems (and hearts and key).
+        if(player.x == heart.x && player.y == heart.y){
+            collideHeart = true;
+            if(collideHeart){
+                lifeCount++;
+                heart.x = -100; // make heart disappear when collides with player
+                heart.y = -100;
+                //ctx.drawImage('char-boy.png', HeartStartX, HeartStartY); //TODO: load image before calling drawImage
+                collideHeart = false;
+            }
+        }
     }
     /* This function initially draws the "game level", it will then call
      * the renderEntities function. Remember, this function is called every
@@ -176,6 +190,9 @@ var score = 0;
         ctx.fillStyle = "yellow";
         ctx.textAlign = "start";
         ctx.fillText("Score: " + score, 10, 80);
+        //draw time count down
+        ctx.fillStyle = "yellow";
+        ctx.fillText("Lives: " + lifeCount, 10, 570);
         renderEntities();
     }
 
@@ -183,6 +200,8 @@ var score = 0;
      * tick. Its purpose is to then call the render functions you have defined
      * on your enemy and player entities within app.js
      */
+
+
     function renderEntities() {
         /* Loop through all of the objects within the allEnemies array and call
          * the render function you have defined.
@@ -192,6 +211,7 @@ var score = 0;
         });
 
         player.render();
+        heart.render();
     }
 
     /* This function does nothing but it could have been a good place to
@@ -212,6 +232,7 @@ var score = 0;
         }
         collideGoal = false;
         collideEnemy = false;
+       // collideHeart = false;
     }
 
     /* Go ahead and load all of the images we know we're going to need to
@@ -223,7 +244,8 @@ var score = 0;
         'images/water-block.png',
         'images/grass-block.png',
         'images/enemy-bug.png',
-        'images/char-boy.png'
+        'images/char-boy.png',
+        'images/Heart.png'
     ]);
     Resources.onReady(init);
 
