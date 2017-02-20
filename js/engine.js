@@ -25,6 +25,7 @@ var Engine = (function(global) {
         ctx = canvas.getContext('2d'),
         lastTime;
 
+
     canvas.width = canW;
     canvas.height = canH;
     doc.body.appendChild(canvas);
@@ -36,6 +37,7 @@ var start = true;
 var frameID = 0;
 var collideEnemy = false;
 var collideGoal = false;
+var score = 0;
 
     function main() {
         /* Get our time delta information which is required if your game
@@ -169,7 +171,11 @@ var collideGoal = false;
                 ctx.drawImage(Resources.get(rowImages[row]), col * 101, row * 83);
             }
         }
-
+        //draw text on the image created
+        ctx.font = "20px Comic Sans MS";
+        ctx.fillStyle = "yellow";
+        ctx.textAlign = "start";
+        ctx.fillText("Score: " + score, 10, 80);
         renderEntities();
     }
 
@@ -201,10 +207,11 @@ var collideGoal = false;
         }
         //TODO: if player wins, increases level and score. (can have requirement of passing each level)
         if(collideGoal){
-
+            //update score when player wins
+            score += 10;
         }
-
-
+        collideGoal = false;
+        collideEnemy = false;
     }
 
     /* Go ahead and load all of the images we know we're going to need to
