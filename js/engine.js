@@ -32,6 +32,11 @@ var Engine = (function(global) {
     /* This function serves as the kickoff point for the game loop itself
      * and handles properly calling the update and render methods.
      */
+var start = true;
+var frameID = 0;
+var collideEnemy = false;
+var collideGoal = false;
+var myVar;
     function main() {
         /* Get our time delta information which is required if your game
          * requires smooth animation. Because everyone's computer processes
@@ -39,25 +44,34 @@ var Engine = (function(global) {
          * would be the same for everyone (regardless of how fast their
          * computer is) - hurray time!
          */
-        var now = Date.now(),
-            dt = (now - lastTime) / 1000.0;
+
+        if(start){
+            var now = Date.now(),
+                dt = (now - lastTime) / 1000.0;
 
         /* Call our update/render functions, pass along the time delta to
          * our update function since it may be used for smooth animation.
          */
-        update(dt);
-        render();
+            update(dt);
+            render();
 
         /* Set our lastTime variable which is used to determine the time delta
          * for the next time this function is called.
          */
-        lastTime = now;
+            lastTime = now;
 
         /* Use the browser's requestAnimationFrame function to call this
          * function again as soon as the browser is able to draw another frame.
          */
-        win.requestAnimationFrame(main);
+            frameID = win.requestAnimationFrame(main);
+        }
+        else{
+             win.cancelAnimationFrame(frameID); // stop frame for now
+             myVar = setTimeout(reset, 200);
+             win.requestAnimationFrame(main);
+        }
     }
+
 
     /* This function does some initial setup that should only occur once,
      * particularly setting the lastTime variable that is required for the
@@ -81,6 +95,7 @@ var Engine = (function(global) {
     function update(dt) {
         updateEntities(dt);
         checkCollisions();
+
     }
 
     /* This is called by the update function and loops through all of the
@@ -96,13 +111,22 @@ var Engine = (function(global) {
         });
         player.update();
     }
+
     function checkCollisions() {
         //Check if player collides with enemies -lose
         allEnemies.forEach(function(enemy){
-            if(player.y == enemy.y && player.x + blockW - 30 > enemy.x && player.x + 30 < enemy.x + blockW){
-                console.log('collided!');
-                reset();
+        if(player.y == enemy.y && player.x + blockW - 30 > enemy.x && player.x + 30 < enemy.x + blockW){
+            collideEnemy = true;
+            if(frameID & collideEnemy){
+                start = false;
+                console.log(frameID);
+
             }
+
+
+        }
+        //TODO: Check if player collides with goal - win, set start to false.
+        //TODO: Check if player collides with gems and hearts, set start to true.
         });
         //TODO: Check winning conditions: reached water
         //TODO: extension: check if collides gems (and key).
@@ -169,9 +193,18 @@ var Engine = (function(global) {
      * those sorts of things. It's only called once by the init() method.
      */
     function reset() {
-        // noop
-        player.x = PlayerStartX;
-        player.y = PlayerStartY;
+        //if player wins or loses, reset position of player
+        start = true;
+        if(collideEnemy | collideGoal){
+            player.x = PlayerStartX;
+            player.y = PlayerStartY;
+        }
+        //TODO: if player wins, increases level and score. (can have requirement of passing each level)
+        if(collideGoal){
+
+        }
+
+
     }
 
     /* Go ahead and load all of the images we know we're going to need to
