@@ -39,10 +39,16 @@ var start = true;
 var frameID = 0;
 var collideEnemy = false;
 var collideGoal = false;
+var collideHeart = false;
+var collideGem = false;
 var score = 0;
 var lifeCount = 3;
 var record = 0;
-
+var delay = 0;
+var collideBlueGem = false;
+var collideGreenGem = false;
+var collideRedGem = false;
+var gameOver = false;
     function main() {
         /* Get our time delta information which is required if your game
          * requires smooth animation. Because everyone's computer processes
@@ -73,7 +79,15 @@ var record = 0;
         }
         else{
              win.cancelAnimationFrame(frameID); // stop frame for now
-             setTimeout(reset, 200);
+             //check if animation needs to be paused for better interaction.
+             if(collideHeart | collideGem){
+                delay = 0   // if player collides with items, then no need to
+                            //pause.
+             }
+             else{
+                delay = 200; // if player wins or lose, then need to pause.
+             }
+             setTimeout(reset, delay);
              win.requestAnimationFrame(main);
         }
     }
@@ -125,7 +139,6 @@ var record = 0;
                 collideEnemy = true;
                 if(collideEnemy){
                     start = false;
-                    lifeCount--;
                     //console.log(frameID);
                 }
             }
@@ -139,13 +152,38 @@ var record = 0;
         if(player.x == heart.x && player.y == heart.y){
             collideHeart = true;
             if(collideHeart){
-                lifeCount++;
+                start = false;
                 heart.x = -100; // make heart disappear when collides with player
                 heart.y = -100;
-                //ctx.drawImage('char-boy.png', HeartStartX, HeartStartY); //TODO: load image before calling drawImage
-                collideHeart = false;
+
+
             }
         }
+        // check player collision with gems
+        gems.forEach(function(gem){
+            if(player.x + 10 > gem.x && player.x < gem.x +10 && player.y + 10 > gem.y && player.y < gem.y + 10){
+                collideGem = true;
+                if(collideGem){
+                    start = false;
+                    gem.x = -100;
+                    gem.y = -100;
+                    if(gemSprites.indexOf(gem.sprite) == 0){
+                        collideBlueGem = true;
+                    }
+                    else if(gemSprites.indexOf(gem.sprite) == 1){
+                        collideGreenGem = true;
+                    }
+                    else if(gemSprites.indexOf(gem.sprite) == 2){
+                        collideRedGem = true;
+                    }
+                }
+            }
+
+
+
+        });
+
+
     }
     /* This function initially draws the "game level", it will then call
      * the renderEntities function. Remember, this function is called every
@@ -212,6 +250,10 @@ var record = 0;
 
         player.render();
         heart.render();
+        gems.forEach(function(gem){
+            gem.render();
+        });
+
     }
 
     /* This function does nothing but it could have been a good place to
@@ -220,19 +262,60 @@ var record = 0;
      */
     function reset() {
         //if player wins or loses, reset position of player
-        start = true;
-        if(collideEnemy | collideGoal){
-            player.x = PlayerStartX;
-            player.y = PlayerStartY;
-        }
+
         //TODO: if player wins, increases level and score. (can have requirement of passing each level)
         if(collideGoal){
             //update score when player wins
+            player.x = PlayerStartX;
+            player.y = PlayerStartY;
+            score += 1000;
+            //TODO: increase level and difficulty when player wins
+        }
+        else if(collideHeart){
+            lifeCount++;
             score += 10;
+
+        }
+        else if(collideGem){
+            if(collideBlueGem){
+                score += 100;
+            }
+            else if(collideGreenGem){
+                score += 200;
+            }
+            else if(collideRedGem){
+                score += 500;
+            }
+        }
+
+        else if(collideEnemy){
+            player.x = PlayerStartX;
+            player.y = PlayerStartY;
+            if(lifeCount > 0){
+                lifeCount--;
+            }
+            else {
+
+                gameOver = true;
+                ctx.fillStyle = "black";
+                ctx.textAlign = "center";
+                ctx.fillText('Game over noob! Press space to restart.', canW/2, canH/2);
+                document.addEventListener("keydown", function(event){// if player presses space, game will restart
+                    if(event.keyCode == 32){
+                        location.reload();
+                    }
+                });
+
+
+            }
+        }
+        if(!gameOver){
+            start = true;
         }
         collideGoal = false;
         collideEnemy = false;
-       // collideHeart = false;
+        collideHeart = false;
+        collideGem = false;
     }
 
     /* Go ahead and load all of the images we know we're going to need to
@@ -245,7 +328,11 @@ var record = 0;
         'images/grass-block.png',
         'images/enemy-bug.png',
         'images/char-boy.png',
-        'images/Heart.png'
+        'images/Heart.png',
+        'images/Gem Blue.png',
+        'images/Gem Green.png',
+        'images/Gem Orange.png'
+
     ]);
     Resources.onReady(init);
 
