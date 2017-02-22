@@ -232,7 +232,7 @@ var levelUp = false;
         ctx.fillText("Score:  " + score, 10, 80);
         //draw time count down
         //ctx.fillStyle = "yellow";
-        ctx.fillText("Life:  " + lifeCount, 10, 570);
+        ctx.fillText("Life:  x " + lifeCount, 10, 570);
         //draw level count up
         ctx.fillText("Level:  " + levelCount, 412, 80);
         renderEntities();
@@ -245,19 +245,20 @@ var levelUp = false;
 
 
     function renderEntities() {
-        /* Loop through all of the objects within the allEnemies array and call
-         * the render function you have defined.
-         */
-        allEnemies.forEach(function(enemy) {
-            enemy.render();
-        });
+
+
 
         player.render();
         heart.render();
         gems.forEach(function(gem){
             gem.render();
         });
-
+        /* Loop through all of the objects within the allEnemies array and call
+         * the render function you have defined.
+         */
+        allEnemies.forEach(function(enemy) {
+            enemy.render();
+        });
     }
 
     /* This function does nothing but it could have been a good place to
@@ -321,7 +322,7 @@ var levelUp = false;
                 gameOver = true;
                 ctx.fillStyle = "black";
                 ctx.textAlign = "center";
-                ctx.fillText('Game over noob! Press space to restart.', canW/2, 6*blockH + 20);
+                ctx.fillText('Game over! Press space to start again.', canW/2, 6*blockH + 20);
                 document.addEventListener("keydown", function(event){// if player presses space, game will restart
                     if(event.keyCode == 32){
                         location.reload();

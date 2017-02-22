@@ -1,4 +1,4 @@
-//TDOO: Add record track
+//TDOO: Add record track and game instruction message?
 
 /* Definition of global variables */
 var NUM_ROW = 6;
