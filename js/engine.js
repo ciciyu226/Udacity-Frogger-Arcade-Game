@@ -299,7 +299,7 @@ var gameOver = false;
                 gameOver = true;
                 ctx.fillStyle = "black";
                 ctx.textAlign = "center";
-                ctx.fillText('Game over noob! Press space to restart.', canW/2, canH/2);
+                ctx.fillText('Game over noob! Press space to restart.', canW/2, 6*blockH + 20);
                 document.addEventListener("keydown", function(event){// if player presses space, game will restart
                     if(event.keyCode == 32){
                         location.reload();
