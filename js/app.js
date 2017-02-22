@@ -1,4 +1,4 @@
-//TDOO: different level and difficulty.
+//TDOO: Add record track
 
 /* Definition of global variables */
 var NUM_ROW = 6;
