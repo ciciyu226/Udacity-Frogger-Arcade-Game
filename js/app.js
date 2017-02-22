@@ -10,16 +10,9 @@ var TOP_OFFSET = 0.25 * blockH;
 var EnemyStartX = -blockW;
 var PlayerStartX = Math.floor(NUM_COL/2) * blockW;
 var PlayerStartY = (NUM_ROW -1)* blockH - TOP_OFFSET;
-//var HeartStartX = Math.floor(Math.random() *  NUM_COL+ 1)* blockW;
-//var HeartStartY = Math.floor(Math.random() * (NUM_ROW - 3)+1) * blockH - TOP_OFFSET;
-//var GemStartX = Math.floor(Math.random() *  NUM_COL+ 1)* blockW;
-//var GemStartY = Math.floor(Math.random() * (NUM_ROW - 3)+1) * blockH - TOP_OFFSET;
-// var charSpeedX = blockW;
-// var charSpeedY = blockH;
-
-// Enemies our player must avoid
 
 
+//Enemy that player will be avoiding
 var Enemy = function(x,y,speed) {
     // Variables applied to each of our instances go here,
     // we've provided one for you to get started
@@ -43,20 +36,24 @@ Enemy.prototype.update = function(dt) {
     // start position and update its speed to another random speed.
     if(this.x > canW){
         this.x = EnemyStartX;
-        this.speed = Math.random()*speedMultiplier + 50;
+        //this.speed = Math.random()*speedMultiplier + 50;
     }
     //if enemy is still inside canvas, update its position to move it
     //a step right.
     else{
         this.x += this.speed * dt;
     }
+
+
 };
 
 // Draw the enemy on the screen, required method for game
 Enemy.prototype.render = function() {
     ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
 };
+Enemy.prototype.enemySpeedUp = function(increment){
 
+}
 // Now write your own player class
 // This class requires an update(), render() and
 // a handleInput() method.
@@ -120,7 +117,8 @@ Gem.prototype = ItemPrototype;
 
 var randomizeItemStartPos = function(){
     var ItemStartPos = {};
-    ItemStartPos.x = Math.floor(Math.random() *  NUM_COL+ 1)* blockW;;
+    //set the x value so that items have half the chance to appear on screen;
+    ItemStartPos.x = Math.floor(Math.random() *  (NUM_COL+ 5))* blockW;;
     ItemStartPos.y = Math.floor(Math.random() * (NUM_ROW - 3)+1) * blockH - TOP_OFFSET;
     return ItemStartPos;
 }
@@ -143,14 +141,14 @@ var numEnemyPerRow = 2;  //each enemytrial will have 2 enemies at level 1.
 var speedMultiplier = 100; // speed multiplier of enemy at level 1.
 for(var i = 0 ; i < numEnemyTrails; i++ ){
     for(var j = 0; j < numEnemyPerRow; j++){
-        var enemy = new Enemy(EnemyStartX, (i+1) * blockH - TOP_OFFSET, Math.random()*speedMultiplier + 50);
+        var enemy = new Enemy(EnemyStartX, (i+1) * blockH - TOP_OFFSET, Math.random()*speedMultiplier + 5);
         allEnemies.push(enemy);
     }
 }
 var player = new Player(PlayerStartX,PlayerStartY); // instantiate player object
 
 var heart = new Heart(randomizeItemStartPos().x, randomizeItemStartPos().y, "images/Heart.png"); // instantiate heart object
-
+console.log('heart at: ' + heart.x/blockW );
 var gems = [];
 var numGems = 4;
 var gemSprites = ['images/Gem Blue.png','images/Gem Green.png','images/Gem Orange.png'];

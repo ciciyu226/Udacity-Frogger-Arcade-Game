@@ -43,12 +43,14 @@ var collideHeart = false;
 var collideGem = false;
 var score = 0;
 var lifeCount = 3;
+var levelCount = 1;
 var record = 0;
 var delay = 0;
 var collideBlueGem = false;
 var collideGreenGem = false;
 var collideRedGem = false;
 var gameOver = false;
+var levelUp = false;
     function main() {
         /* Get our time delta information which is required if your game
          * requires smooth animation. Because everyone's computer processes
@@ -127,7 +129,7 @@ var gameOver = false;
      */
     function updateEntities(dt) {
         allEnemies.forEach(function(enemy) {
-            enemy.update(dt);
+                enemy.update(dt);
         });
         player.update();
     }
@@ -225,12 +227,14 @@ var gameOver = false;
         }
         //draw text on the image created
         ctx.font = "20px Comic Sans MS";
-        ctx.fillStyle = "yellow";
+        ctx.fillStyle = "#ffff66";
         ctx.textAlign = "start";
-        ctx.fillText("Score: " + score, 10, 80);
+        ctx.fillText("Score:  " + score, 10, 80);
         //draw time count down
-        ctx.fillStyle = "yellow";
-        ctx.fillText("Lives: " + lifeCount, 10, 570);
+        //ctx.fillStyle = "yellow";
+        ctx.fillText("Life:  " + lifeCount, 10, 570);
+        //draw level count up
+        ctx.fillText("Level:  " + levelCount, 412, 80);
         renderEntities();
     }
 
@@ -269,13 +273,29 @@ var gameOver = false;
             player.x = PlayerStartX;
             player.y = PlayerStartY;
             score += 1000;
-            //TODO: increase level and difficulty when player wins
+            levelCount ++;
+            //speed up enemies by a certain amount
+            for(var i = 0; i < allEnemies.length; i++){
+                 allEnemies[i].speed += 20;
+            }
+            //TODO: for each new level, generate items randomly again
+            gems.forEach(function(gem){
+                gem.x = this.randomizeItemStartPos().x;
+                gem.y = this.randomizeItemStartPos().y
+                gem.sprite = gemSprites[Math.floor(Math.random() * gemSprites.length)];
+
+            });
+
+            heart.x = randomizeItemStartPos().x;
+            heart.y = randomizeItemStartPos().y;
         }
+        //when player collects heart, increase life by one
         else if(collideHeart){
             lifeCount++;
             score += 10;
 
         }
+        //when collides gem, increase score corresponding to each gem's value
         else if(collideGem){
             if(collideBlueGem){
                 score += 100;
@@ -287,7 +307,9 @@ var gameOver = false;
                 score += 500;
             }
         }
-
+        //when collides enemy, reset player's position, decrease life by 1
+        //if life is used up, then go to game over screen and reload game with
+        //user press of space bar(event listen).
         else if(collideEnemy){
             player.x = PlayerStartX;
             player.y = PlayerStartY;
@@ -303,6 +325,7 @@ var gameOver = false;
                 document.addEventListener("keydown", function(event){// if player presses space, game will restart
                     if(event.keyCode == 32){
                         location.reload();
+                        gameOver = false;
                     }
                 });
 
