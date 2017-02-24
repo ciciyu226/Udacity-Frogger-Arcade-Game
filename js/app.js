@@ -1,4 +1,3 @@
-/* Definition of global variables */
 var NUM_ROW = 6;
 var NUM_COL = 5;
 var canW = 505;
@@ -34,7 +33,6 @@ Enemy.prototype.update = function(dt) {
     // start position and update its speed to another random speed.
     if(this.x > canW){
         this.x = EnemyStartX;
-        //this.speed = Math.random()*speedMultiplier + 50;
     }
     //if enemy is still inside canvas, update its position to move it
     //a step right.
@@ -51,7 +49,7 @@ Enemy.prototype.render = function() {
 };
 Enemy.prototype.enemySpeedUp = function(increment){
 
-}
+};
 // Now write your own player class
 // This class requires an update(), render() and
 // a handleInput() method.
@@ -101,7 +99,7 @@ var ItemPrototype = Object.create(Item.prototype);
 //The subclass Heart
 var Heart = function(x,y,sprite){
     Item.call(this, x, y, sprite);
-}
+};
 //chain the prototype to Item
 Heart.prototype = ItemPrototype;
 
@@ -109,25 +107,17 @@ Heart.prototype = ItemPrototype;
 var Gem = function(x,y, sprite){
     Item.call(this, x, y, sprite);
 
-}
+};
 //chain the prototype to Item
 Gem.prototype = ItemPrototype;
 
 var randomizeItemStartPos = function(){
     var ItemStartPos = {};
     //set the x value so that items have half the chance to appear on screen;
-    ItemStartPos.x = Math.floor(Math.random() *  (NUM_COL+ 5))* blockW;;
+    ItemStartPos.x = Math.floor(Math.random() *  (NUM_COL+ 5))* blockW;
     ItemStartPos.y = Math.floor(Math.random() * (NUM_ROW - 3)+1) * blockH - TOP_OFFSET;
     return ItemStartPos;
-}
-// var randomizeItemStartPos = function(){
-//     var ItemStartPos = {};
-//     ItemStartPos.x = Math.floor(Math.random() *  NUM_COL+ 1)* blockW;;
-//     ItemStartPos.y = Math.floor(Math.random() * (NUM_ROW - 3)+1) * blockH - TOP_OFFSET;
-//     return ItemStart;
-// }
-
-
+};
 
 // Now instantiate your objects.
 // Place all enemy objects in an array called allEnemies
@@ -167,5 +157,7 @@ var pressed = function(e){
     };
 
     player.handleInput(allowedKeys[e.keyCode]);
-}
+};
 document.addEventListener('keyup', pressed);
+
+

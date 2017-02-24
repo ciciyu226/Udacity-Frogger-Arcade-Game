@@ -1,19 +1,3 @@
-/* Engine.js
- * This file provides the game loop functionality (update entities and render),
- * draws the initial game board on the screen, and then calls the update and
- * render methods on your player and enemy objects (defined in your app.js).
- *
- * A game engine works by drawing the entire game screen over and over, kind of
- * like a flipbook you may have created as a kid. When your player moves across
- * the screen, it may look like just that image/character is moving or being
- * drawn but that is not the case. What's really happening is the entire "scene"
- * is being drawn over and over, presenting the illusion of animation.
- *
- * This engine is available globally via the Engine variable and it also makes
- * the canvas' context (ctx) object globally available to make writing app.js
- * a little simpler to work with.
- */
-
 var Engine = (function(global) {
     /* Predefine the variables we'll be using within this scope,
      * create the canvas element, grab the 2D context for that canvas
@@ -26,7 +10,7 @@ var Engine = (function(global) {
         lastTime;
 
     var date = new Date();
-    var time = 0
+    var time = 0;
 
     canvas.width = canW;
     canvas.height = canH;
@@ -84,7 +68,7 @@ var Engine = (function(global) {
                             //unbind space listener
                             document.removeEventListener("keydown", space);
                         }
-                    })
+                    });
 
                 }
 
@@ -102,8 +86,8 @@ var Engine = (function(global) {
         }
         else{ //frame is stopped
 
-             if(collideHeart | collideGem){
-                    delay = 0   // if player collides with items, then no need to
+             if(collideHeart || collideGem){
+                    delay = 0;   // if player collides with items, then no need to
                                 //pause.
                  }
                  else{
@@ -153,11 +137,6 @@ var Engine = (function(global) {
                 enemy.update(dt);
         });
         player.update();
-        // if(collideGoal){
-        //     score+=1000;
-        //     collideGoal = false;
-        // }
-
     }
 
     function checkCollisions() {
@@ -192,7 +171,7 @@ var Engine = (function(global) {
                     start = false;
                     gem.x = -100;
                     gem.y = -100;
-                    if(gemSprites.indexOf(gem.sprite) == 0){
+                    if(gemSprites.indexOf(gem.sprite) === 0){
                         collideBlueGem = true;
                     }
                     else if(gemSprites.indexOf(gem.sprite) == 1){
@@ -320,7 +299,7 @@ var Engine = (function(global) {
             //TODO: for each new level, generate items randomly again
             gems.forEach(function(gem){
                 gem.x = this.randomizeItemStartPos().x;
-                gem.y = this.randomizeItemStartPos().y
+                gem.y = this.randomizeItemStartPos().y;
                 gem.sprite = gemSprites[Math.floor(Math.random() * gemSprites.length)];
 
             });
@@ -367,10 +346,8 @@ var Engine = (function(global) {
                 document.removeEventListener('keyup', pressed);
             }
         }
-       // if(!gameOver){ //game will keep running until game is over
-            start = true;
 
-        //}
+        start = true;
         collideGoal = false;
         collideEnemy = false;
         collideHeart = false;
@@ -401,7 +378,7 @@ var Engine = (function(global) {
             //reset enemy speed to level 1
             allEnemies.forEach(function(enemy){
                 enemy.speed = Math.random()*speedMultiplier + 5;
-            })
+            });
             //add back controller
             document.addEventListener('keyup', pressed);
             gameOver = false;
@@ -433,3 +410,4 @@ var Engine = (function(global) {
      */
     global.ctx = ctx;
 })(this);
+
