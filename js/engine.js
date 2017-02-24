@@ -45,10 +45,8 @@ var Engine = (function(global) {
          */
 
         if(start){
-            //if( !gameOver ){
                 var now = Date.now(),
                     dt = (now - lastTime) / 1000.0;
-
 
             /* Call our update/render functions, pass along the time delta to
              * our update function since it may be used for smooth animation.
@@ -60,12 +58,16 @@ var Engine = (function(global) {
              * for the next time this function is called.
              */
                 lastTime = now;
+            /* Check if game over, then show game over window and wait for
+             * player to hit reset. This guarantees that the background animation
+             * will still be playing while game over window is showed up.
+             */
                 if(gameOver){
                     gameOverWindow();
                     document.addEventListener("keydown", function space(event){
                         if(event.keyCode == 32){
                             reset();
-                            //unbind space listener
+                            //unbind the space listener
                             document.removeEventListener("keydown", space);
                         }
                     });
@@ -77,12 +79,6 @@ var Engine = (function(global) {
              */
                 win.requestAnimationFrame(main);
 
-            // else{ //if game is over
-            //     //add space bar listener in order to restart the game
-            //     //after everything has been reset, restart game by player pressing space
-            //     win.requestAnimationFrame(main);
-
-            // }
         }
         else{ //frame is stopped
 
@@ -149,11 +145,13 @@ var Engine = (function(global) {
                 }
             }
         });
+        //if player collides goal, then go to refresh() to update score and
+        //player position.
         if(player.y < blockH - TOP_OFFSET){
             collideGoal = true;
             start = false;
         }
-        //check if collides gems (and hearts and key).
+        //if player collides heart, go to refresh(),then throw heart out of screen
         if(player.x == heart.x && player.y == heart.y){
             collideHeart = true;
             if(collideHeart){
@@ -257,8 +255,7 @@ var Engine = (function(global) {
         player.render();
     }
 
-    /*
-     *
+    /* This function renders the game over window while player uses up its life.
      */
     function gameOverWindow() {
         //generating gameover window
@@ -281,7 +278,10 @@ var Engine = (function(global) {
                 ctx.fillText('Press space to start again', 250, 400);
 
     }
-
+    /* This function handles the updating of socre, life, level, and position when
+     * collisions happen. It also keep track of the best score for game record
+     * setting purpose.
+     */
     function refresh() {
         //if player wins or loses, refresh position of player
 
@@ -354,11 +354,9 @@ var Engine = (function(global) {
         collideGem = false;
 
     }
-    /* TODO: rewrite description of reset function
-     * This function does nothing but it could have been a good place to
-     * handle game reset states - maybe a new game menu or a game over screen
-     * those sorts of things. It's only called once by the init() method.
-     * and reload game with user press of space bar(event listen).
+    /* This function resets all the global variables except for game record variables,
+     * enemies' speed, and unbind the movement controller with its listener.
+     * Basically this resets the game upon user's calling when game is over.
      */
     function reset() {
         //reset all global variables

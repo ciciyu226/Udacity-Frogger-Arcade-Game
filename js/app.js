@@ -62,12 +62,12 @@ var Player = function(x,y){
 Player.prototype.update = function(){
         this.handleInput();
 };
-
+/* Draw player picture on the screen*/
 Player.prototype.render = function(){
     ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
 };
 
-
+/* identify each keyboard input with its updating in position */
 Player.prototype.handleInput = function(keyChar){
     if(keyChar == 'left' && this.x > 0){
         this.x -= blockW;
@@ -147,7 +147,7 @@ for(var i = 0; i < Math.floor(Math.random()* numGems); i++){
     gems.push(gem);
 }
 // This listens for key presses and sends the keys to your
-// Player.handleInput() method. You don't need to modify this.
+// Player.handleInput() method.
 var pressed = function(e){
     var allowedKeys = {
         37: 'left',
