@@ -33,7 +33,6 @@ var Engine = (function(global) {
     doc.body.appendChild(canvas);
 
     var start = true;
-    var frameID = 0;
     var collideEnemy = false;
     var collideGoal = false;
     var collideHeart = false;
@@ -62,39 +61,60 @@ var Engine = (function(global) {
          */
 
         if(start){
-            var now = Date.now(),
-                dt = (now - lastTime) / 1000.0;
+            //if( !gameOver ){
+                var now = Date.now(),
+                    dt = (now - lastTime) / 1000.0;
 
-        /* Call our update/render functions, pass along the time delta to
-         * our update function since it may be used for smooth animation.
-         */
-            update(dt);
-            render();
 
-        /* Set our lastTime variable which is used to determine the time delta
-         * for the next time this function is called.
-         */
-            lastTime = now;
+            /* Call our update/render functions, pass along the time delta to
+             * our update function since it may be used for smooth animation.
+             */
+                update(dt); //set start to false in collision, already done
+                render();
 
-        /* Use the browser's requestAnimationFrame function to call this
-         * function again as soon as the browser is able to draw another frame.
-         */
-            frameID = win.requestAnimationFrame(main);
+            /* Set our lastTime variable which is used to determine the time delta
+             * for the next time this function is called.
+             */
+                lastTime = now;
+                if(gameOver){
+                    gameOverWindow();
+                    document.addEventListener("keydown", function space(event){
+                        if(event.keyCode == 32){
+                            reset();
+                            //unbind space listener
+                            document.removeEventListener("keydown", space);
+                        }
+                    })
+
+                }
+
+            /* Use the browser's requestAnimationFrame function to call this
+             * function again as soon as the browser is able to draw another frame.
+             */
+                win.requestAnimationFrame(main);
+
+            // else{ //if game is over
+            //     //add space bar listener in order to restart the game
+            //     //after everything has been reset, restart game by player pressing space
+            //     win.requestAnimationFrame(main);
+
+            // }
         }
-        else{
-             win.cancelAnimationFrame(frameID); // stop frame for now
-             //check if animation needs to be paused for better interaction.
+        else{ //frame is stopped
+
              if(collideHeart | collideGem){
-                delay = 0   // if player collides with items, then no need to
-                            //pause.
-             }
-             else{
-                delay = 200; // if player wins or lose, then need to pause.
-             }
-             setTimeout(reset, delay);
+                    delay = 0   // if player collides with items, then no need to
+                                //pause.
+                 }
+                 else{
+                    delay = 200; // if player wins or lose, then need to pause.
+                 }
+             setTimeout(refresh, delay);
+             //start running program by getting next frame
              win.requestAnimationFrame(main);
-        }
+           }
     }
+
 
     /* This function does some initial setup that should only occur once,
      * particularly setting the lastTime variable that is required for the
@@ -133,6 +153,11 @@ var Engine = (function(global) {
                 enemy.update(dt);
         });
         player.update();
+        // if(collideGoal){
+        //     score+=1000;
+        //     collideGoal = false;
+        // }
+
     }
 
     function checkCollisions() {
@@ -142,12 +167,10 @@ var Engine = (function(global) {
                 collideEnemy = true;
                 if(collideEnemy){
                     start = false;
-                    //console.log(frameID);
                 }
             }
         });
         if(player.y < blockH - TOP_OFFSET){
-            console.log(player.y);
             collideGoal = true;
             start = false;
         }
@@ -255,14 +278,35 @@ var Engine = (function(global) {
         player.render();
     }
 
-    /* This function does nothing but it could have been a good place to
-     * handle game reset states - maybe a new game menu or a game over screen
-     * those sorts of things. It's only called once by the init() method.
+    /*
+     *
      */
-    function reset() {
-        //if player wins or loses, reset position of player
+    function gameOverWindow() {
+        //generating gameover window
+                ctx.fillStyle = "black";
+                ctx.textAlign = "center";
+                ctx.fillStyle = "rgba(255,255,255,0.9)";
+                ctx.fillRect(127,180,250,230);
+                ctx.fillStyle = "black";
+                ctx.textAlign = "center";
+                ctx.fillStyle = "red";
+                ctx.font = "60px Comic Sans MS";
+                ctx.fillText('GAME  OVER', 250, 210); // Record
+                ctx.font = "22px Arial";
+                ctx.textAlign = "center";
+                ctx.fillStyle = "black";
 
-        //TODO: if player wins, increases level and score. (can have requirement of passing each level)
+                ctx.fillText('Best level: ' + bestLevel, 250, 320); // Best level
+                ctx.fillText('Best score: ' + bestScore, 250, 280); // Best score
+                ctx.font = "15px Arial";
+                ctx.fillText('Press space to start again', 250, 400);
+
+    }
+
+    function refresh() {
+        //if player wins or loses, refresh position of player
+
+        //if player wins, increases level and score. (can have requirement of passing each level)
         if(collideGoal){
             //update score when player wins
             player.x = PlayerStartX;
@@ -303,15 +347,15 @@ var Engine = (function(global) {
             }
         }
         //when collides enemy, reset player's position, decrease life by 1
-        //if life is used up, then go to game over screen and reload game with
-        //user press of space bar(event listen).
+        //if life is used up, then go to game over screen in reset function
         else if(collideEnemy){
             player.x = PlayerStartX;
             player.y = PlayerStartY;
             if(lifeCount > 0){
                 lifeCount--;
-            }
-            else {
+            }else{
+             //this is a condition which tells the program to generate game over window
+                gameOver = true;
                 //update record
                 if(bestScore < score){
                     bestScore = score;
@@ -319,68 +363,51 @@ var Engine = (function(global) {
                 if(bestLevel < levelCount){
                     bestLevel = levelCount;
                 }
-                //generating gameover window
-                gameOver = true;
-                ctx.fillStyle = "black";
-                ctx.textAlign = "center";
-                ctx.fillStyle = "rgba(255,255,255,0.9)";
-                ctx.fillRect(127,180,250,230);
-                ctx.fillStyle = "black";
-                ctx.textAlign = "center";
-                ctx.fillStyle = "red";
-                ctx.font = "60px Comic Sans MS";
-                ctx.fillText('GAME  OVER', 250, 210); // Record
-                ctx.font = "22px Arial";
-                ctx.textAlign = "center";
-                ctx.fillStyle = "black";
-
-                ctx.fillText('Best level: ' + bestLevel, 250, 320); // Best level
-                ctx.fillText('Best score: ' + bestScore, 250, 280); // Best score
-                ctx.font = "15px Arial";
-                ctx.fillText('Press space to start again', 250, 400);
-                //reset all global variables
-                frameID = 0;
-                collideEnemy = false;
-                collideGoal = false;
-                collideHeart = false;
-                collideGem = false;
-                score = 0;
-                lifeCount = 3;
-                levelCount = 1;
-                record = 0;
-                delay = 0;
-                collideBlueGem = false;
-                collideGreenGem = false;
-                collideRedGem = false;
-                //reset enemy speed to level 1
-                allEnemies.forEach(function(enemy){
-                    enemy.speed = Math.random()*speedMultiplier + 5;
-                })
                 //unbind controller
-                if(gameOver){
-                     document.removeEventListener('keyup', pressed);
-                 }
-                //after everything has beed reset, restart game by player pressing space
-                document.addEventListener("keydown", function(event){
-                    if(event.keyCode == 32){
-                        gameOver = false;
-                        //add back controller
-                        document.addEventListener('keyup', pressed);
-                    }
-                });
-
-
+                document.removeEventListener('keyup', pressed);
             }
         }
-        //game will keep running until game over
-        if(!gameOver){
+       // if(!gameOver){ //game will keep running until game is over
             start = true;
-        }
+
+        //}
         collideGoal = false;
         collideEnemy = false;
         collideHeart = false;
         collideGem = false;
+
     }
+    /* TODO: rewrite description of reset function
+     * This function does nothing but it could have been a good place to
+     * handle game reset states - maybe a new game menu or a game over screen
+     * those sorts of things. It's only called once by the init() method.
+     * and reload game with user press of space bar(event listen).
+     */
+    function reset() {
+        //reset all global variables
+            collideEnemy = false;
+            collideGoal = false;
+            collideHeart = false;
+            collideGem = false;
+            score = 0;
+            lifeCount = 3;
+            levelCount = 1;
+            record = 0;
+            delay = 0;
+            collideBlueGem = false;
+            collideGreenGem = false;
+            collideRedGem = false;
+
+            //reset enemy speed to level 1
+            allEnemies.forEach(function(enemy){
+                enemy.speed = Math.random()*speedMultiplier + 5;
+            })
+            //add back controller
+            document.addEventListener('keyup', pressed);
+            gameOver = false;
+
+
+   }
 
     /* Go ahead and load all of the images we know we're going to need to
      * draw our game level. Then set init as the callback method, so that when
