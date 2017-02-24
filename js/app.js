@@ -1,5 +1,3 @@
-//TDOO: Add record track and game instruction message?
-
 /* Definition of global variables */
 var NUM_ROW = 6;
 var NUM_COL = 5;
@@ -133,7 +131,7 @@ var randomizeItemStartPos = function(){
 
 // Now instantiate your objects.
 // Place all enemy objects in an array called allEnemies
-// Place the player object in a variable called player   (Math.floor(Math.random()*numEnemyTrails) + 1)* blockH
+// Place the player object in a variable called player
 var allEnemies =[];
 //
 var numEnemyTrails = 3;  //there are 3 enemy trails at level 1.
@@ -145,20 +143,22 @@ for(var i = 0 ; i < numEnemyTrails; i++ ){
         allEnemies.push(enemy);
     }
 }
-var player = new Player(PlayerStartX,PlayerStartY); // instantiate player object
+// instantiate player object
+var player = new Player(PlayerStartX,PlayerStartY);
+// instantiate heart object
+var heart = new Heart(randomizeItemStartPos().x, randomizeItemStartPos().y, "images/Heart.png");
 
-var heart = new Heart(randomizeItemStartPos().x, randomizeItemStartPos().y, "images/Heart.png"); // instantiate heart object
-console.log('heart at: ' + heart.x/blockW );
+//instantiate gem object
 var gems = [];
 var numGems = 4;
 var gemSprites = ['images/Gem Blue.png','images/Gem Green.png','images/Gem Orange.png'];
-for(var i = 0; i < Math.floor(Math.random()* numGems); i++){  //instantiate gem object
+for(var i = 0; i < Math.floor(Math.random()* numGems); i++){
     var gem = new Gem(this.randomizeItemStartPos().x, this.randomizeItemStartPos().y, gemSprites[Math.floor(Math.random() * gemSprites.length)] );
     gems.push(gem);
 }
 // This listens for key presses and sends the keys to your
 // Player.handleInput() method. You don't need to modify this.
-document.addEventListener('keyup', function(e) {
+var pressed = function(e){
     var allowedKeys = {
         37: 'left',
         38: 'up',
@@ -167,4 +167,5 @@ document.addEventListener('keyup', function(e) {
     };
 
     player.handleInput(allowedKeys[e.keyCode]);
-});
+}
+document.addEventListener('keyup', pressed);

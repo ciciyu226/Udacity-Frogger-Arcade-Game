@@ -32,25 +32,27 @@ var Engine = (function(global) {
     canvas.height = canH;
     doc.body.appendChild(canvas);
 
+    var start = true;
+    var frameID = 0;
+    var collideEnemy = false;
+    var collideGoal = false;
+    var collideHeart = false;
+    var collideGem = false;
+    var score = 0;
+    var lifeCount = 3;
+    var levelCount = 1;
+    var record = 0;
+    var delay = 0;
+    var collideBlueGem = false;
+    var collideGreenGem = false;
+    var collideRedGem = false;
+    var gameOver = false;
+    var bestScore = 0;
+    var bestLevel = 1;
+
     /* This function serves as the kickoff point for the game loop itself
      * and handles properly calling the update and render methods.
      */
-var start = true;
-var frameID = 0;
-var collideEnemy = false;
-var collideGoal = false;
-var collideHeart = false;
-var collideGem = false;
-var score = 0;
-var lifeCount = 3;
-var levelCount = 1;
-var record = 0;
-var delay = 0;
-var collideBlueGem = false;
-var collideGreenGem = false;
-var collideRedGem = false;
-var gameOver = false;
-var levelUp = false;
     function main() {
         /* Get our time delta information which is required if your game
          * requires smooth animation. Because everyone's computer processes
@@ -93,7 +95,6 @@ var levelUp = false;
              win.requestAnimationFrame(main);
         }
     }
-
 
     /* This function does some initial setup that should only occur once,
      * particularly setting the lastTime variable that is required for the
@@ -150,15 +151,14 @@ var levelUp = false;
             collideGoal = true;
             start = false;
         }
-        //TODO: extension: check if collides gems (and hearts and key).
+        //check if collides gems (and hearts and key).
         if(player.x == heart.x && player.y == heart.y){
             collideHeart = true;
             if(collideHeart){
                 start = false;
-                heart.x = -100; // make heart disappear when collides with player
+                // make heart disappear when collides with player
+                heart.x = -100;
                 heart.y = -100;
-
-
             }
         }
         // check player collision with gems
@@ -180,12 +180,7 @@ var levelUp = false;
                     }
                 }
             }
-
-
-
         });
-
-
     }
     /* This function initially draws the "game level", it will then call
      * the renderEntities function. Remember, this function is called every
@@ -246,9 +241,6 @@ var levelUp = false;
 
     function renderEntities() {
 
-
-
-        player.render();
         heart.render();
         gems.forEach(function(gem){
             gem.render();
@@ -259,6 +251,8 @@ var levelUp = false;
         allEnemies.forEach(function(enemy) {
             enemy.render();
         });
+        //render player over other items to place it at the top layer
+        player.render();
     }
 
     /* This function does nothing but it could have been a good place to
@@ -318,21 +312,67 @@ var levelUp = false;
                 lifeCount--;
             }
             else {
-
+                //update record
+                if(bestScore < score){
+                    bestScore = score;
+                }
+                if(bestLevel < levelCount){
+                    bestLevel = levelCount;
+                }
+                //generating gameover window
                 gameOver = true;
                 ctx.fillStyle = "black";
                 ctx.textAlign = "center";
-                ctx.fillText('Game over! Press space to start again.', canW/2, 6*blockH + 20);
-                document.addEventListener("keydown", function(event){// if player presses space, game will restart
+                ctx.fillStyle = "rgba(255,255,255,0.9)";
+                ctx.fillRect(127,180,250,230);
+                ctx.fillStyle = "black";
+                ctx.textAlign = "center";
+                ctx.fillStyle = "red";
+                ctx.font = "60px Comic Sans MS";
+                ctx.fillText('GAME  OVER', 250, 210); // Record
+                ctx.font = "22px Arial";
+                ctx.textAlign = "center";
+                ctx.fillStyle = "black";
+
+                ctx.fillText('Best level: ' + bestLevel, 250, 320); // Best level
+                ctx.fillText('Best score: ' + bestScore, 250, 280); // Best score
+                ctx.font = "15px Arial";
+                ctx.fillText('Press space to start again', 250, 400);
+                //reset all global variables
+                frameID = 0;
+                collideEnemy = false;
+                collideGoal = false;
+                collideHeart = false;
+                collideGem = false;
+                score = 0;
+                lifeCount = 3;
+                levelCount = 1;
+                record = 0;
+                delay = 0;
+                collideBlueGem = false;
+                collideGreenGem = false;
+                collideRedGem = false;
+                //reset enemy speed to level 1
+                allEnemies.forEach(function(enemy){
+                    enemy.speed = Math.random()*speedMultiplier + 5;
+                })
+                //unbind controller
+                if(gameOver){
+                     document.removeEventListener('keyup', pressed);
+                 }
+                //after everything has beed reset, restart game by player pressing space
+                document.addEventListener("keydown", function(event){
                     if(event.keyCode == 32){
-                        location.reload();
                         gameOver = false;
+                        //add back controller
+                        document.addEventListener('keyup', pressed);
                     }
                 });
 
 
             }
         }
+        //game will keep running until game over
         if(!gameOver){
             start = true;
         }
